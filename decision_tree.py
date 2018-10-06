@@ -38,16 +38,16 @@ def entropy(matrixInstances):
     exit(0)
 
 
-
-matrixInstances = None
-with open("dadosBenchmark_validacaoAlgoritmoAD.csv") as instances:
-    for instance in instances:
-        splittedInstance = instance.split(';')
-        if(matrixInstances != None):
-            currentInstance = []
-            for field in splittedInstance:
-                currentInstance.append(field)
-            matrixInstances.append(currentInstance)
-        else:
-            matrixInstances = []
-featuresEntropy = entropy(matrixInstances)
+def calculate():
+    matrixInstances = None
+    with open("data/dadosBenchmark_validacaoAlgoritmoAD.csv") as instances:
+        for instance in instances:
+            splittedInstance = instance.split(';')
+            if(matrixInstances != None):
+                currentInstance = []
+                for field in splittedInstance:
+                    currentInstance.append(field)
+                matrixInstances.append(currentInstance)
+            else:
+                matrixInstances = []
+    featuresEntropy = entropy(matrixInstances)
