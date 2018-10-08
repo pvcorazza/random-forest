@@ -59,15 +59,12 @@ def calculate():
     data.pop(0)
     # print(data)
 
+    
+    # Separa os dados em listas baseado nos atributos do index
     possible_values = get_possible_values(data, index)
-
-    # for value in possible_values:
-    #     print(value)
-
-    new_data = []
-
-    for instance in data:
-        if (instance[index] == "Ensolarado"):
-            new_data.append(instance)
-
-    print(new_data)
+    for value in possible_values:
+        new_data = []
+        for instance in data:
+            if (instance[index] == value):
+                new_data.append(instance)
+        print(new_data)
