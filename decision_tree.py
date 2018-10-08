@@ -47,17 +47,13 @@ def get_possible_values(rows, col):
     return set([row[col] for row in rows])
 
 
-def create_decision_tree(data):
-    node = {"att": None, "value": {}}
-    # if (data.values())
-
-
 class Node(object):
     def __init__(self):
         self.value = None
         self.next = None
         self.childs = None
         self.data = None
+
 
 # Separa os dados em listas baseado nos atributos do index
 def get_child_node(root, index, value):
@@ -70,14 +66,31 @@ def get_child_node(root, index, value):
     new_node.data = new_data
     return new_node
 
-def calculate():
-    data = list(csv.reader(open("data/dadosBenchmark_validacaoAlgoritmoAD.csv", "r"), delimiter=";"))
-    header = data[0]
+
+# Verifica se todos os valores possuem a mesma classe
+def is_same_class(data, index_class):
+    possible_values = get_possible_values(data, index_class)
+    if (len(possible_values) == 1):
+        return True
+    return False
+
+
+def build_decision_tree(data, header):
+    root = Node()
+
+
+    # Se todos os valores possuem a mesma classe, retorna um nó folha com o valor dessa classe
+    index_class = header.index("Joga")
+    if is_same_class(data, index_class):
+        root.value = data[0][index_class]
+        return root
+
+    # OBS.: AQUI DEVEMOS ENCONTRAR O MELHOR ATRIBUTO
+
     index = header.index("Tempo")
-    data.pop(0)
+
     # print(data)
 
-    root = Node()
     root.data = data
     root.value = "Tempo"
     root.childs = []
@@ -88,8 +101,5 @@ def calculate():
         new_node = get_child_node(root, index, value)
         root.childs.append(new_node)
 
-
-
     for c in root.childs:
         print(c.data)
-
