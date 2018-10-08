@@ -48,9 +48,7 @@ def get_possible_values(data, col):
 class Node(object):
     def __init__(self):
         self.value = None
-        self.next = None
         self.childs = None
-        self.data = None
 
 
 # Separa os dados em listas baseado nos atributos do index
@@ -99,14 +97,22 @@ def info_attribute(data, index, index_class):
 def gain(data, index_attribute, index_class):
     return info(data, index_class) - info_attribute(data, index_attribute, index_class)
 
+
+def get_most_frequent_class(data, index_class):
+    pass
+
+
 def build_decision_tree(data, header):
     root = Node()
 
     # Se todos os valores possuem a mesma classe, retorna um nó folha com o valor dessa classe
-    index_class = len(header)
+    index_class = len(data[0]) - 1
     if is_same_class(data, index_class):
         root.value = data[0][index_class]
         return root
+
+    if len(header) < 1:
+        return get_most_frequent_class(data, index_class)
 
     # OBS.: AQUI DEVEMOS ENCONTRAR O MELHOR ATRIBUTO
 
@@ -118,18 +124,20 @@ def build_decision_tree(data, header):
     maxIndex = gains.index(max(gains))
 
     value = header[maxIndex]
-    print(value)
+
 
     index = header.index(value)
+    header.pop(index)
 
-    root.data = data
     root.value = value
     root.childs = []
 
     # Encontra os possíveis valores para determinado atributo e adiciona um filho relativo a cada valor
-    possible_values = get_possible_values(root.data, index)
+    possible_values = get_possible_values(data, index)
     for value in possible_values:
-        new_data = get_child_node_data(root.data, index, value)
+        new_data = get_child_node_data(data, index, value)
+        for x in new_data:
+            del x[index]
         new_node = build_decision_tree(new_data, header)
         root.childs.append(new_node)
 
