@@ -56,15 +56,12 @@ class Node(object):
 
 
 # Separa os dados em listas baseado nos atributos do index
-def get_child_node(root, index, value):
-    new_node = Node()
-    new_node.value = value
+def get_child_node_data(root, index, value):
     new_data = []
     for instance in root.data:
         if (instance[index] == value):
             new_data.append(instance)
-    new_node.data = new_data
-    return new_node
+    return new_data
 
 
 # Verifica se todos os valores possuem a mesma classe
@@ -78,7 +75,6 @@ def is_same_class(data, index_class):
 def build_decision_tree(data, header):
     root = Node()
 
-
     # Se todos os valores possuem a mesma classe, retorna um nó folha com o valor dessa classe
     index_class = header.index("Joga")
     if is_same_class(data, index_class):
@@ -86,20 +82,21 @@ def build_decision_tree(data, header):
         return root
 
     # OBS.: AQUI DEVEMOS ENCONTRAR O MELHOR ATRIBUTO
+    # Por enquanto estou utilizando o com o index=0
 
-    index = header.index("Tempo")
-
-    # print(data)
+    value = header[0]
+    index = header.index(value)
+    header.pop(0)
 
     root.data = data
-    root.value = "Tempo"
+    root.value = value
     root.childs = []
 
     # Encontra os possíveis valores para determinado atributo e adiciona um filho relativo a cada valor
     possible_values = get_possible_values(root.data, index)
     for value in possible_values:
-        new_node = get_child_node(root, index, value)
+        new_data = get_child_node_data(root, index, value)
+        new_node = build_decision_tree(new_data, header)
         root.childs.append(new_node)
 
-    for c in root.childs:
-        print(c.data)
+    return root
