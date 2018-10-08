@@ -15,7 +15,7 @@ class Tree(object):
         self.data = data
         self.data.pop(0)
         self.class_entropy = self.info(data,len(self.attributes)-1)
-        self.root = self.build_decision_tree(self.data, self.attributes)
+        self.root = self.build_decision_tree(copy.deepcopy(self.data), self.attributes)
 
     # Possíveis valores para o atributo
     def get_possible_values(self, data, attribute):
@@ -66,12 +66,11 @@ class Tree(object):
     def gain(self, data, index_attribute):
         return self.class_entropy - self.info_attribute(data, index_attribute)
 
-    def get_most_frequent_class(self, data):
-        all_values = [row[len(data[0])-1] for row in data]
-        print(all_values)
+    def get_most_frequent_class(self):
+        all_values = [row[len(self.data[0])-1] for row in self.data]
+        return max(set(all_values), key=all_values.count)
 
     def build_decision_tree(self, data, attributes):
-
 
         # Cria novo nodo
         root = Node()
@@ -81,14 +80,10 @@ class Tree(object):
             root.attribute = data[0][len(data[0]) -1]
             return root
 
-        # if len(header) < 1:
-        #     return self.get_most_frequent_class(data, self.index_class)
-        #
-        # print(self.get_most_frequent_class(data,self.index_class))
+        # Se a lista de atributos é vazia, retorna um nó folha com a classe mais frequente no dataset
         if not attributes:
-            new_node = Node()  # self.get_most_frequent_class(new_data)
-            new_node.attribute = "Nao"
-            return new_node
+            root.attribute = self.get_most_frequent_class()
+            return root
 
         # Encontra atributo que apresenta o melhor critério de divisão
         gains = []
@@ -120,7 +115,7 @@ class Tree(object):
             # Senão, associa uma subárvore ao nodo, com os novos dados de treinamento
             if not new_data:
                 new_node = Node() # self.get_most_frequent_class(new_data)
-                new_node.attribute = "Nao"
+                new_node.attribute = self.get_most_frequent_class()
             else:
                 new_node = self.build_decision_tree(new_data, copy.deepcopy(attributes))
                 new_node.parent_value = value
