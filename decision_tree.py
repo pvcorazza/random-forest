@@ -1,5 +1,7 @@
 import copy
 import math
+from collections import deque
+
 
 class Node(object):
     def __init__(self):
@@ -19,7 +21,7 @@ class Tree(object):
 
     # Possíveis valores para o atributo
     def get_possible_values(self, data, attribute):
-        return set([row[attribute] for row in data])
+        return list(set([row[attribute] for row in data]))
 
     # Separa os dados em listas baseado nos atributos do index
     def get_child_node_data(self, data, index_attribute, value):
@@ -70,6 +72,17 @@ class Tree(object):
         all_values = [row[len(self.data[0])-1] for row in self.data]
         return max(set(all_values), key=all_values.count)
 
+    def is_continuous(self, possible_values):
+        is_continuous = False
+
+        try:
+            float(list(possible_values)[0])
+            is_continuous = True
+        except ValueError:
+            is_continuous = False
+
+        return is_continuous
+
     def build_decision_tree(self, data, attributes):
 
         # Cria novo nodo
@@ -103,18 +116,45 @@ class Tree(object):
         # Encontra os possíveis valores para determinado atributo e adiciona um filho relativo a cada valor
         possible_values = self.get_possible_values(data, index)
 
+        average=None
+        continuous = self.is_continuous(possible_values)
+        majors = []
+        minors = []
+        if(continuous):
+            values = [float(i) for i in possible_values]
+            average = sum(values)/len(values)
+            for value in possible_values:
+                new_data = self.get_child_node_data(data, index, value)
+                if float(value)<=average:
+                    minors.append(new_data[0])
+                else:
+                    majors.append(new_data[0])
+
+            possible_values = ["<="+str(average), ">"+str(average)]
+            print(possible_values)
+
         root.childs = []
 
-        # Para cada valor distindo do atributo encontra um subconjunto dos dados onde existe esse valor
+        # Para cada valor distinto do atributo encontra um subconjunto dos dados onde existe esse valor
         for value in possible_values:
-            new_data = self.get_child_node_data(data, index, value)
+
+            new_data = []
+
+            if (continuous):
+               if (value[0] == "<"):
+                   new_data = minors
+               else:
+                   new_data = majors
+            else:
+                new_data = self.get_child_node_data(data, index, value)
+
             for x in new_data:
                 del x[index]
 
             # Se o subconjunto é vazio, retorna um nodo folha com a classe mais frequente no subconjunto
             # Senão, associa uma subárvore ao nodo, com os novos dados de treinamento
             if not new_data:
-                new_node = Node() # self.get_most_frequent_class(new_data)
+                new_node = Node()
                 new_node.attribute = self.get_most_frequent_class()
             else:
                 new_node = self.build_decision_tree(new_data, copy.deepcopy(attributes))
@@ -122,3 +162,18 @@ class Tree(object):
             root.childs.append(new_node)
 
         return root
+
+    def printTree(self):
+        if self.root:
+            roots = deque()
+            roots.append(self.root)
+            while len(roots) > 0:
+                root = roots.popleft()
+                print(root.attribute)
+                if (root.childs):
+                    for child in root.childs:
+                        print(child.parent_value)
+                        print('({})'.format(child.attribute))
+                        roots.append(child)
+                elif root.attribute:
+                    print(root.attribute)
