@@ -52,6 +52,24 @@ def create_decision_tree(data):
     # if (data.values())
 
 
+class Node(object):
+    def __init__(self):
+        self.value = None
+        self.next = None
+        self.childs = None
+        self.data = None
+
+# Separa os dados em listas baseado nos atributos do index
+def get_child_node(root, index, value):
+    new_node = Node()
+    new_node.value = value
+    new_data = []
+    for instance in root.data:
+        if (instance[index] == value):
+            new_data.append(instance)
+    new_node.data = new_data
+    return new_node
+
 def calculate():
     data = list(csv.reader(open("data/dadosBenchmark_validacaoAlgoritmoAD.csv", "r"), delimiter=";"))
     header = data[0]
@@ -59,12 +77,19 @@ def calculate():
     data.pop(0)
     # print(data)
 
-    
-    # Separa os dados em listas baseado nos atributos do index
-    possible_values = get_possible_values(data, index)
+    root = Node()
+    root.data = data
+    root.value = "Tempo"
+    root.childs = []
+
+    # Encontra os possíveis valores para determinado atributo e adiciona um filho relativo a cada valor
+    possible_values = get_possible_values(root.data, index)
     for value in possible_values:
-        new_data = []
-        for instance in data:
-            if (instance[index] == value):
-                new_data.append(instance)
-        print(new_data)
+        new_node = get_child_node(root, index, value)
+        root.childs.append(new_node)
+
+
+
+    for c in root.childs:
+        print(c.data)
+
