@@ -16,7 +16,6 @@ class Tree(object):
         self.attributes.pop(len(self.attributes)-1)
         self.data = data
         self.data.pop(0)
-        self.class_entropy = self.info(data,len(self.attributes)-1)
         self.root = self.build_decision_tree(copy.deepcopy(self.data), self.attributes)
 
     # Possíveis valores para o atributo
@@ -43,7 +42,6 @@ class Tree(object):
         all_values = [row[index_attribute] for row in data]
         possible_values = self.get_possible_values(data, index_attribute)
         total_values = len(all_values)
-
         entropy = 0
 
         for val in possible_values:
@@ -53,10 +51,11 @@ class Tree(object):
 
 
     def info_attribute(self, data, index_attribute):
+        # Todos os valores para o atributo
         all_values = [row[index_attribute] for row in data]
+        # Possiveis valores para o atributo
         possible_values = self.get_possible_values(data, index_attribute)
         total_values = len(all_values)
-
         entropy = 0
 
         for val in possible_values:
@@ -66,15 +65,13 @@ class Tree(object):
         return entropy
 
     def gain(self, data, index_attribute):
-        return self.class_entropy - self.info_attribute(data, index_attribute)
+        return self.info(data,len(data[0])-1) - self.info_attribute(data, index_attribute)
 
     def get_most_frequent_class(self):
         all_values = [row[len(self.data[0])-1] for row in self.data]
         return max(set(all_values), key=all_values.count)
 
     def is_continuous(self, possible_values):
-        is_continuous = False
-
         try:
             float(list(possible_values)[0])
             is_continuous = True
@@ -131,15 +128,11 @@ class Tree(object):
                     majors.append(new_data[0])
 
             possible_values = ["<="+str(average), ">"+str(average)]
-            print(possible_values)
 
         root.childs = []
 
         # Para cada valor distinto do atributo encontra um subconjunto dos dados onde existe esse valor
         for value in possible_values:
-
-            new_data = []
-
             if (continuous):
                if (value[0] == "<"):
                    new_data = minors
@@ -147,6 +140,7 @@ class Tree(object):
                    new_data = majors
             else:
                 new_data = self.get_child_node_data(data, index, value)
+
 
             for x in new_data:
                 del x[index]
@@ -157,23 +151,19 @@ class Tree(object):
                 new_node = Node()
                 new_node.attribute = self.get_most_frequent_class()
             else:
-                new_node = self.build_decision_tree(new_data, copy.deepcopy(attributes))
+                new_node = self.build_decision_tree(copy.deepcopy(new_data), copy.deepcopy(attributes))
                 new_node.parent_value = value
             root.childs.append(new_node)
 
         return root
 
-    def printTree(self):
-        if self.root:
-            roots = deque()
-            roots.append(self.root)
-            while len(roots) > 0:
-                root = roots.popleft()
-                print(root.attribute)
-                if (root.childs):
-                    for child in root.childs:
-                        print(child.parent_value)
-                        print('({})'.format(child.attribute))
-                        roots.append(child)
-                elif root.attribute:
-                    print(root.attribute)
+    def printTree(self, root):
+        if root:
+            if root.parent_value:
+                print("----->  " + root.parent_value + " ---> " + root.attribute)
+            else:
+                print("-----  " + root.attribute + "  -----")
+            if (root.childs):
+                for child in root.childs:
+                    self.printTree(child)
+                print()

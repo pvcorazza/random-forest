@@ -8,6 +8,6 @@ if __name__ == '__main__':
 
     decision_tree = Tree(data)
     print(decision_tree)
-    decision_tree.printTree()
+    decision_tree.printTree(decision_tree.root)
 
 
