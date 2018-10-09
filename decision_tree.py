@@ -1,7 +1,5 @@
 import copy
 import math
-from collections import deque
-
 
 class Node(object):
     def __init__(self):
@@ -16,7 +14,7 @@ class Tree(object):
         self.attributes.pop(len(self.attributes)-1)
         self.data = data
         self.data.pop(0)
-        self.root = self.build_decision_tree(copy.deepcopy(self.data), self.attributes)
+        self.root = self.build_decision_tree(copy.deepcopy(self.data), copy.deepcopy(self.attributes))
 
     # Possíveis valores para o atributo
     def get_possible_values(self, data, attribute):
@@ -37,7 +35,7 @@ class Tree(object):
             return True
         return False
 
-
+    # Cálculo da entropia
     def info (self, data, index_attribute):
         all_values = [row[index_attribute] for row in data]
         possible_values = self.get_possible_values(data, index_attribute)
@@ -49,7 +47,7 @@ class Tree(object):
 
         return entropy
 
-
+    # Cálculo da entropia de um determinado atributo
     def info_attribute(self, data, index_attribute):
         # Todos os valores para o atributo
         all_values = [row[index_attribute] for row in data]
@@ -64,13 +62,16 @@ class Tree(object):
 
         return entropy
 
+    # Função para determinar o ganho de um determinado atributo
     def gain(self, data, index_attribute):
         return self.info(data,len(data[0])-1) - self.info_attribute(data, index_attribute)
 
+    # Retorna a classe mais frequente no dataset
     def get_most_frequent_class(self):
         all_values = [row[len(self.data[0])-1] for row in self.data]
         return max(set(all_values), key=all_values.count)
 
+    # Verifica se os valores informados são contínuos
     def is_continuous(self, possible_values):
         try:
             float(list(possible_values)[0])
@@ -80,6 +81,7 @@ class Tree(object):
 
         return is_continuous
 
+    # Construção da árvore com o algoritmo ID3
     def build_decision_tree(self, data, attributes):
 
         # Cria novo nodo
@@ -157,6 +159,7 @@ class Tree(object):
 
         return root
 
+    # Impressão da árvore para debug
     def printTree(self, root):
         if root:
             if root.parent_value:
@@ -167,3 +170,20 @@ class Tree(object):
                 for child in root.childs:
                     self.printTree(child)
                 print()
+
+
+    # Retorna o valor predito para a instância
+    def classify(self, instance, node):
+        predicted = None
+        if node:
+            index = self.attributes.index(node.attribute)
+
+            for child in node.childs:
+
+                if child.parent_value == instance[index]:
+                    if not child.childs:
+                        return child.attribute
+                    else:
+                        predicted=self.classify(instance, child)
+
+        return predicted
