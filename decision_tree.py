@@ -177,13 +177,31 @@ class Tree(object):
         predicted = None
         if node:
             index = self.attributes.index(node.attribute)
-
-            for child in node.childs:
-
-                if child.parent_value == instance[index]:
-                    if not child.childs:
-                        return child.attribute
+            continuous = self.is_continuous(instance[index])
+            if (continuous):
+                for child in node.childs:
+                    if "<" in child.parent_value:
+                        val = child.parent_value.replace("<", "")
+                        val = float(val.replace("=", ""))
+                        if float(instance[index]) <= val:
+                            if not child.childs:
+                                return child.attribute
+                            else:
+                                predicted = self.classify(instance, child)
                     else:
-                        predicted=self.classify(instance, child)
+                        val = float(child.parent_value.replace(">", ""))
+                        if float(instance[index]) > val:
+                            if not child.childs:
+                                return child.attribute
+                            else:
+                                predicted = self.classify(instance, child)
+
+            else:
+                for child in node.childs:
+                    if child.parent_value == instance[index]:
+                        if not child.childs:
+                            return child.attribute
+                        else:
+                            predicted=self.classify(instance, child)
 
         return predicted
