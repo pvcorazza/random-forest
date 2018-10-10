@@ -94,7 +94,7 @@ def read_data(filename):
 
 if __name__ == '__main__':
 
-    data = read_data("ionosphere.data")
+    data = read_data("benchmark.csv")
     decision_tree = Tree(copy.deepcopy(data), True)
 
     print(decision_tree)

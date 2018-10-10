@@ -83,19 +83,18 @@ class Tree(object):
 
         return is_continuous
 
-    # O mecanismo de amostragem de m atributos,
+    # Seleção de m atributos (raiz quadrada do total de atributos)
     def sampling(self, attributes):
-        numAttributes = round(math.sqrt(len(attributes)))
-        selectedAttributes = []
-        for numAttributeSelected in range(numAttributes):
-            if (len(range(numAttributes)) > len(attributes)):
-                for attribute in attributes:
-                    selectedAttributes.append(attribute)
-            else:
-                selectedAttributes.append(attributes[randrange(len(attributes))])
+        num_attributes = round(math.sqrt(len(attributes)))
+        selected_attributes = []
 
-        print(selectedAttributes)
-        return selectedAttributes
+        for numAttributeSelected in range(num_attributes):
+            while (len(selected_attributes) < num_attributes):
+                attribute = copy.deepcopy(attributes[randrange(len(attributes))])
+                if attribute not in selected_attributes:
+                    selected_attributes.append(attribute)
+
+        return selected_attributes
 
 
     # Construção da árvore com o algoritmo ID3
