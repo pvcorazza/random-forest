@@ -10,4 +10,6 @@ if __name__ == '__main__':
     decision_tree = Tree(copy.deepcopy(data))
 
     bootstrap = Bootstrap(data)
-    print(bootstrap.sub_partition(0.8))
+    new_bootstrap = bootstrap.get_partition()
+
+    print(new_bootstrap)

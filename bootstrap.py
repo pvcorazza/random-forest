@@ -1,15 +1,31 @@
-from random import randrange
+from random import randrange, randint
 
 
 class Bootstrap(object):
     def __init__(self, data):
         data.pop(0)
         self.data = data
+        # aproximadamente 63.2% das instâncias comporão o subconjunto de treinamento
+        self.percent_instances = 0.632
 
-    def sub_partition(self, ratio):
-        sample = list()
-        n_sample = round(len(self.data) * ratio)
-        while len(sample) < n_sample:
-            index = randrange(len(self.data))
-            sample.append(self.data[index])
-        return sample
+    # Retorna uma partição do dataset gerado através de uma amostragem aleatória de instâncias, com reposição
+    def get_partition(self):
+        training_partition = []
+        max_index = len(self.data) - 1
+        index_list = list(range(0, max_index))
+        num_instances = round(max_index * self.percent_instances)
+        while len(training_partition) < num_instances:
+            index=randint(0, max_index)
+            training_partition.append(self.data[index])
+            if index in index_list:
+                index_list.remove(index)
+
+        test_partition = []
+        for i in index_list:
+            test_partition.append(self.data[i])
+
+        bootstrap = []
+        bootstrap.append(training_partition)
+        bootstrap.append(test_partition)
+
+        return bootstrap
