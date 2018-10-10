@@ -22,11 +22,6 @@ class RandomForest(object):
         return trees
 
     def predict(self, trees, instance):
-        instances = copy.deepcopy(self.data)
-        instances.pop(0)
-
-        for x in instances:
-            del x[len(instances[0])-1]
 
         predictions = []
         for tree in trees:

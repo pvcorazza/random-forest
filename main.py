@@ -102,7 +102,7 @@ if __name__ == '__main__':
 
     trees = forest.get_forest(100)
 
-    instance = ["Nublado","Fria","Normal","Verdadeiro","Sim"]
+    instance = ["Ensolarado","Amena","Alta","Falso"]
 
     prediction = forest.predict(trees, instance)
 
