@@ -3,6 +3,8 @@ import csv
 
 from bootstrap import Bootstrap
 from decision_tree import Tree
+from random_forest import RandomForest
+
 
 def read_data(filename):
 
@@ -95,35 +97,14 @@ def read_data(filename):
 if __name__ == '__main__':
 
     data = read_data("benchmark.csv")
-    decision_tree = Tree(copy.deepcopy(data), True)
 
-    print(decision_tree)
+    forest = RandomForest(copy.deepcopy(data))
 
-    exit()
+    trees = forest.get_forest(100)
 
-    bootstrap = Bootstrap(copy.deepcopy(data))
-    new_bootstrap = bootstrap.get_partition()
+    instance = ["Nublado","Fria","Normal","Verdadeiro","Sim"]
 
-    bootstrap_sets = []
-    for i in range(0,100):
-        bootstrap_sets.append(bootstrap.get_partition())
+    prediction = forest.predict(trees, instance)
 
-    trees = []
-    for bootstrap in bootstrap_sets:
-        trees.append(Tree(copy.deepcopy(bootstrap[0]), True))
-
-    instances = copy.deepcopy(data)
-    instances.pop(0)
-
-    for x in instances:
-        del x[4]
-
-    for instance in instances:
-        predictions = []
-        for tree in trees:
-            predictions.append(tree.classify(instance, tree.root))
-        predicted = max(set(predictions), key=predictions.count)
-        print(predicted)
-
-
+    print(prediction)
 
