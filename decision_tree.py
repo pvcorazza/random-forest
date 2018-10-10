@@ -186,6 +186,8 @@ class Tree(object):
     def classify(self, instance, node):
         predicted = None
         if node:
+            if not node.childs:
+                return node.attribute
             index = self.attributes.index(node.attribute)
             continuous = self.is_continuous(instance[index])
             if (continuous):
