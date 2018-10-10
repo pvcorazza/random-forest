@@ -6,10 +6,12 @@ class Node(object):
         self.attribute = None
         self.parent_value = None
         self.childs = None
+        self.gain = None
 
 
 class Tree(object):
-    def __init__(self, data):
+    def __init__(self, data, attribute_sampling):
+        self.attribute_sampling = attribute_sampling
         self.attributes = data[0]
         self.attributes.pop(len(self.attributes)-1)
         self.data = data
@@ -67,8 +69,8 @@ class Tree(object):
         return self.info(data,len(data[0])-1) - self.info_attribute(data, index_attribute)
 
     # Retorna a classe mais frequente no dataset
-    def get_most_frequent_class(self):
-        all_values = [row[len(self.data[0])-1] for row in self.data]
+    def get_most_frequent_class(self,data):
+        all_values = [row[len(data[0])-1] for row in data]
         return max(set(all_values), key=all_values.count)
 
     # Verifica se os valores informados são contínuos
@@ -81,18 +83,28 @@ class Tree(object):
 
         return is_continuous
 
-    # Construção da árvore com o algoritmo ID3
-    def build_decision_tree(self, data, attributes):
-
-
+    # O mecanismo de amostragem de m atributos,
+    def sampling(self, attributes):
         numAttributes = round(math.sqrt(len(attributes)))
         selectedAttributes = []
         for numAttributeSelected in range(numAttributes):
-            if(len(range(numAttributes)) > len(attributes)):
+            if (len(range(numAttributes)) > len(attributes)):
                 for attribute in attributes:
                     selectedAttributes.append(attribute)
             else:
                 selectedAttributes.append(attributes[randrange(len(attributes))])
+
+        print(selectedAttributes)
+        return selectedAttributes
+
+
+    # Construção da árvore com o algoritmo ID3
+    def build_decision_tree(self, data, attributes):
+
+        if self.attribute_sampling:
+            selected_attributes = self.sampling(copy.deepcopy(attributes))
+        else:
+            selected_attributes = copy.deepcopy(attributes)
 
         # Cria novo nodo
         root = Node()
@@ -103,18 +115,21 @@ class Tree(object):
             return root
 
         # Se a lista de atributos é vazia, retorna um nó folha com a classe mais frequente no dataset
-        if not selectedAttributes:
-            root.attribute = self.get_most_frequent_class()
+        if not selected_attributes:
+            root.attribute = self.get_most_frequent_class(data)
             return root
 
         # Encontra atributo que apresenta o melhor critério de divisão
         gains = []
-        for attribute in selectedAttributes:
+        for attribute in selected_attributes:
             index_attribute = attributes.index(attribute)
             gains.append(self.gain(data, index_attribute))
         maxIndex = gains.index(max(gains))
         value = attributes[maxIndex]
         index = attributes.index(value)
+
+        # Assoia o ganho ao nodo
+        root.gain = max(gains)
 
         # Associa atributo ao nodo
         root.attribute = value
@@ -161,7 +176,7 @@ class Tree(object):
             # Senão, associa uma subárvore ao nodo, com os novos dados de treinamento
             if not new_data:
                 new_node = Node()
-                new_node.attribute = self.get_most_frequent_class()
+                new_node.attribute = self.get_most_frequent_class(data)
             else:
                 new_node = self.build_decision_tree(copy.deepcopy(new_data), copy.deepcopy(attributes))
                 new_node.parent_value = value
