@@ -1,6 +1,6 @@
 import copy
 import math
-
+from random import randrange
 class Node(object):
     def __init__(self):
         self.attribute = None
@@ -84,6 +84,13 @@ class Tree(object):
     # Construção da árvore com o algoritmo ID3
     def build_decision_tree(self, data, attributes):
 
+        selectedAttributes = []
+        for numAttributeSelected in range(2):
+            if(len(range(2)) > len(attributes)):
+                for attribute in attributes:
+                    selectedAttributes.append(attribute)
+            else:
+                selectedAttributes.append(attributes[randrange(len(attributes))])
         # Cria novo nodo
         root = Node()
 
@@ -93,13 +100,13 @@ class Tree(object):
             return root
 
         # Se a lista de atributos é vazia, retorna um nó folha com a classe mais frequente no dataset
-        if not attributes:
+        if not selectedAttributes:
             root.attribute = self.get_most_frequent_class()
             return root
 
         # Encontra atributo que apresenta o melhor critério de divisão
         gains = []
-        for attribute in attributes:
+        for attribute in selectedAttributes:
             index_attribute = attributes.index(attribute)
             gains.append(self.gain(data, index_attribute))
         maxIndex = gains.index(max(gains))
