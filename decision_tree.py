@@ -84,13 +84,16 @@ class Tree(object):
     # Construção da árvore com o algoritmo ID3
     def build_decision_tree(self, data, attributes):
 
+
+        numAttributes = round(math.sqrt(len(attributes)))
         selectedAttributes = []
-        for numAttributeSelected in range(2):
-            if(len(range(2)) > len(attributes)):
+        for numAttributeSelected in range(numAttributes):
+            if(len(range(numAttributes)) > len(attributes)):
                 for attribute in attributes:
                     selectedAttributes.append(attribute)
             else:
                 selectedAttributes.append(attributes[randrange(len(attributes))])
+
         # Cria novo nodo
         root = Node()
 
