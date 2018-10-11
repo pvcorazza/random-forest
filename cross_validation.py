@@ -49,7 +49,7 @@ class CrossValidation(object):
                 del instance[len(instance)-1]
                 # print(instance)
                 prediction = forest.predict(trees, instance)
-                # print("Prediction: " + str(prediction))
-                # print("Real Class: " + str(real_class))
+                print("Prediction: " + str(prediction))
+                print("Real Class: " + str(real_class))
 
 

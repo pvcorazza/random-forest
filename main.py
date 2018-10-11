@@ -67,18 +67,22 @@ def read_data(filename):
         attributes = ['Class', 'Alcohol', 'Malic', 'Ash', 'Alcalinity', 'Magnesium', 'Phenols',
                       'Flavanoids', 'Nonflavanoid', 'Proanthocyanins', 'Color', 'Hue', 'Od', 'Proline']
 
-        data_formatted = []
-        for l in data:
-            data_formatted.append([str(float(i)) for i in l])
+
+        for i in range(len(data)):
+            for j in range (len(data[0])):
+                if data[i][j][0] == ".":
+                    data[i][j] = copy.deepcopy("0"+data[i][j])
 
         data.insert(0, attributes)
+
+
 
         # Posiciona a classe ao final dos dados para padronização
         for x in data:
             x.append(copy.deepcopy(x[0]))
             del x[0]
 
-        return data_formatted
+        return data
 
     # 3. Ionosphere Data Set (34 atributos, 351 exemplos, 2 classes)
     # https://archive.ics.uci.edu/ml/datasets/Ionosphere
