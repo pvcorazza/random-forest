@@ -13,7 +13,7 @@ class Bootstrap(object):
     # Retorna uma partição do dataset gerado através de uma amostragem aleatória de instâncias, com reposição
     def get_partition(self):
         training_partition = []
-        training_partition.append(self.attributes)
+        training_partition.append(copy.deepcopy(self.attributes))
         max_index = len(self.data) - 1
         index_list = list(range(0, max_index))
         num_instances = round(max_index * self.percent_instances)
@@ -24,12 +24,12 @@ class Bootstrap(object):
                 index_list.remove(index)
 
         test_partition = []
-        test_partition.append(self.attributes)
+        test_partition.append(copy.deepcopy(self.attributes))
         for i in index_list:
             test_partition.append(copy.deepcopy(self.data[i]))
 
         bootstrap = []
-        bootstrap.append(training_partition)
-        bootstrap.append(test_partition)
+        bootstrap.append(copy.deepcopy(training_partition))
+        bootstrap.append(copy.deepcopy(test_partition))
 
         return bootstrap

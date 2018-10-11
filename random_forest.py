@@ -25,7 +25,7 @@ class RandomForest(object):
 
         predictions = []
         for tree in trees:
-            predictions.append(tree.classify(instance, tree.root))
+            predictions.append(tree.classify(instance, copy.deepcopy(tree.root)))
         predicted = max(set(predictions), key=predictions.count)
 
         return predicted

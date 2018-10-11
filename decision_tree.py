@@ -16,7 +16,7 @@ class Tree(object):
         self.attributes.pop(len(self.attributes)-1)
         self.data = data
         self.data.pop(0)
-        self.root = self.build_decision_tree(copy.deepcopy(self.data), copy.deepcopy(self.attributes))
+        self.root = self.build_decision_tree(copy.deepcopy(self.data), copy.deepcopy(self.attributes), "root")
 
     # Possíveis valores para o atributo
     def get_possible_values(self, data, attribute):
@@ -98,7 +98,7 @@ class Tree(object):
 
 
     # Construção da árvore com o algoritmo ID3
-    def build_decision_tree(self, data, attributes):
+    def build_decision_tree(self, data, attributes, parent_value):
 
         if self.attribute_sampling:
             selected_attributes = self.sampling(copy.deepcopy(attributes))
@@ -107,6 +107,8 @@ class Tree(object):
 
         # Cria novo nodo
         root = Node()
+
+        root.parent_value = parent_value
 
         # Se todos os valores possuem a mesma classe, retorna um nó folha com o valor dessa classe
         if self.is_same_class(data):
@@ -176,9 +178,13 @@ class Tree(object):
             if not new_data:
                 new_node = Node()
                 new_node.attribute = self.get_most_frequent_class(data)
+                new_node.parent_value = copy.deepcopy(value)
             else:
-                new_node = self.build_decision_tree(copy.deepcopy(new_data), copy.deepcopy(attributes))
-                new_node.parent_value = value
+                new_node = self.build_decision_tree(copy.deepcopy(new_data), copy.deepcopy(attributes),copy.deepcopy(value))
+                new_node.parent_value = copy.deepcopy(value)
+                # print("-----")
+                # print(new_node.attribute)
+                # print(new_node.parent_value)
             root.childs.append(new_node)
 
         return root
@@ -198,6 +204,11 @@ class Tree(object):
 
     # Retorna o valor predito para a instância
     def classify(self, instance, node):
+        # print("========")
+        # print (node.attribute)
+        # for i in node.childs:
+        #     print(i.parent_value)
+        val = 0
         predicted = None
         if node:
             if not node.childs:
@@ -206,9 +217,9 @@ class Tree(object):
             continuous = self.is_continuous(instance[index])
             if (continuous):
                 for child in node.childs:
-                    if "<" in child.parent_value:
-                        val = child.parent_value.replace("<", "")
-                        val = float(val.replace("=", ""))
+                    if "<=" in child.parent_value:
+                        val = child.parent_value
+                        val = float(val.replace("<=", ""))
                         if float(instance[index]) <= val:
                             if not child.childs:
                                 return child.attribute

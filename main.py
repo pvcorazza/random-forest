@@ -2,13 +2,12 @@ import copy
 import csv
 
 from bootstrap import Bootstrap
+from cross_validation import CrossValidation
 from decision_tree import Tree
 from random_forest import RandomForest
 
 
 def read_data(filename):
-
-
     if filename == "benchmark.csv" or filename == "benchmark-continuo.csv":
         data = list(csv.reader(open("data/" + filename, "r"), delimiter=";"))
         return data
@@ -38,13 +37,14 @@ def read_data(filename):
         # 	h) concave points (number of concave portions of the contour)
         # 	i) symmetry
         # 	j) fractal dimension ("coastline approximation" - 1)
-        attributes = ['Id', 'Diagnosis','RadiusMean', 'TextureMean', 'PerimeterMean', 'AreaMean', 'SmoothnessMean',
-                    'CompactnessMean', 'ConcavityMean', 'ConcavePointsMean', 'SymmetryMean', 'FractalDimensionMean',
-                    'RadiusSE', 'TextureSE', 'PerimeterSE', 'AreaSE', 'SmoothnessSE',
-                    'CompactnessSE', 'ConcavitySE', 'ConcavePointsSE', 'SymmetrySE', 'FractalDimensionSE',
-                    'RadiusWorst', 'TextureWorst', 'PerimeterWorst', 'AreaWorst', 'SmoothnessWorst',
-                    'CompactnessWorst', 'ConcavityWorst', 'ConcavePointsWorst', 'SymmetryWorst', 'FractalDimensionWorst',
-                    ]
+        attributes = ['Id', 'Diagnosis', 'RadiusMean', 'TextureMean', 'PerimeterMean', 'AreaMean', 'SmoothnessMean',
+                      'CompactnessMean', 'ConcavityMean', 'ConcavePointsMean', 'SymmetryMean', 'FractalDimensionMean',
+                      'RadiusSE', 'TextureSE', 'PerimeterSE', 'AreaSE', 'SmoothnessSE',
+                      'CompactnessSE', 'ConcavitySE', 'ConcavePointsSE', 'SymmetrySE', 'FractalDimensionSE',
+                      'RadiusWorst', 'TextureWorst', 'PerimeterWorst', 'AreaWorst', 'SmoothnessWorst',
+                      'CompactnessWorst', 'ConcavityWorst', 'ConcavePointsWorst', 'SymmetryWorst',
+                      'FractalDimensionWorst',
+                      ]
 
         data.insert(0, attributes)
 
@@ -65,16 +65,20 @@ def read_data(filename):
     if filename == "wine.data":
 
         attributes = ['Class', 'Alcohol', 'Malic', 'Ash', 'Alcalinity', 'Magnesium', 'Phenols',
-                   'Flavanoids', 'Nonflavanoid', 'Proanthocyanins', 'Color', 'Hue', 'Od', 'Proline']
+                      'Flavanoids', 'Nonflavanoid', 'Proanthocyanins', 'Color', 'Hue', 'Od', 'Proline']
 
-        data.insert(0,attributes)
+        data_formatted = []
+        for l in data:
+            data_formatted.append([str(float(i)) for i in l])
+
+        data.insert(0, attributes)
 
         # Posiciona a classe ao final dos dados para padronização
         for x in data:
             x.append(copy.deepcopy(x[0]))
             del x[0]
 
-        return data
+        return data_formatted
 
     # 3. Ionosphere Data Set (34 atributos, 351 exemplos, 2 classes)
     # https://archive.ics.uci.edu/ml/datasets/Ionosphere
@@ -85,7 +89,7 @@ def read_data(filename):
         attributes = []
 
         for i in range(34):
-            attributes.append("Signal"+str(i))
+            attributes.append("Signal" + str(i))
 
         attributes.append("Class")
 
@@ -95,16 +99,19 @@ def read_data(filename):
 
 
 if __name__ == '__main__':
+    data = read_data("wine.data")
 
-    data = read_data("benchmark.csv")
+    cross_validation = CrossValidation(copy.deepcopy(data))
+    folds = cross_validation.divide_kfolds(copy.deepcopy(data), 10)
+    cross_validation.validate(folds,10)
+    exit()
 
     forest = RandomForest(copy.deepcopy(data))
 
     trees = forest.get_forest(100)
 
-    instance = ["Ensolarado","Amena","Alta","Falso"]
+    instance = ["Ensolarado", "Amena", "Alta", "Falso"]
 
     prediction = forest.predict(trees, instance)
 
     print(prediction)
-
