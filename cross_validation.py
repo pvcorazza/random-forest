@@ -28,6 +28,8 @@ class CrossValidation(object):
     def validate(self, folds, num_trees):
 
         attributes = folds[0][0]
+        ok = 0
+        error = 0
 
         for fold in folds:
             del fold[0]
@@ -42,14 +44,19 @@ class CrossValidation(object):
             forest = RandomForest(copy.deepcopy(training))
             trees = forest.get_forest(num_trees)
 
-
-
             for instance in test:
                 real_class = instance[len(instance)-1]
                 del instance[len(instance)-1]
-                # print(instance)
                 prediction = forest.predict(trees, instance)
-                print("Prediction: " + str(prediction))
-                print("Real Class: " + str(real_class))
+
+                if (prediction == real_class):
+                    ok = ok + 1
+                else:
+                    error = error + 1
+
+        print("Total: " + str(ok+error))
+        print("Corretas: " + str(ok))
+        print("Erradas: " + str(error))
+        print("Porcentagem: " + str(ok/(ok+error)))
 
 

@@ -131,13 +131,10 @@ class Tree(object):
 
         # Assoia o ganho ao nodo
         root.gain = max(gains)
-
         # Associa atributo ao nodo
         root.attribute = value
-
         # Remove atributo da lista de atributos
         attributes.pop(index)
-
         # Encontra os possíveis valores para determinado atributo e adiciona um filho relativo a cada valor
         possible_values = self.get_possible_values(data, index)
 
@@ -204,10 +201,6 @@ class Tree(object):
 
     # Retorna o valor predito para a instância
     def classify(self, instance, node):
-        # print("========")
-        # print (node.attribute)
-        # for i in node.childs:
-        #     print(i.parent_value)
         val = 0
         predicted = None
         if node:

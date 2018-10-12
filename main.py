@@ -8,7 +8,7 @@ from random_forest import RandomForest
 
 
 def read_data(filename):
-    if filename == "benchmark.csv" or filename == "benchmark-continuo.csv":
+    if filename == "benchmark.csv":
         data = list(csv.reader(open("data/" + filename, "r"), delimiter=";"))
         return data
 
@@ -104,18 +104,6 @@ def read_data(filename):
 
 if __name__ == '__main__':
     data = read_data("wine.data")
-
     cross_validation = CrossValidation(copy.deepcopy(data))
     folds = cross_validation.divide_kfolds(copy.deepcopy(data), 10)
     cross_validation.validate(folds,10)
-    exit()
-
-    forest = RandomForest(copy.deepcopy(data))
-
-    trees = forest.get_forest(100)
-
-    instance = ["Ensolarado", "Amena", "Alta", "Falso"]
-
-    prediction = forest.predict(trees, instance)
-
-    print(prediction)
